@@ -84,35 +84,35 @@ def contact_view(request):
         )
         contact_message.save()
 
-        html_message = render_to_string(
-            "home/contact_email.html",
-            {
-                "name": name,
-                "subject": subject,
-                "message": message,
-                "from_email": settings.EMAIL_HOST_USER,
-            },
-        )
-        plain_message = strip_tags(html_message)
+        # html_message = render_to_string(
+        #     "home/contact_email.html",
+        #     {
+        #         "name": name,
+        #         "subject": subject,
+        #         "message": message,
+        #         "from_email": settings.EMAIL_HOST_USER,
+        #     },
+        # )
+        # plain_message = strip_tags(html_message)
 
-        # Send an email notification to the client
-        send_mail(
-            subject=f"Confirmation: {subject}",
-            message=plain_message,
-            from_email=settings.EMAIL_HOST_USER,  # Replace with your email
-            recipient_list=[email],
-            fail_silently=False,
-            html_message=html_message,
-        )
+        # # Send an email notification to the client
+        # send_mail(
+        #     subject=f"Confirmation: {subject}",
+        #     message=plain_message,
+        #     from_email=settings.EMAIL_HOST_USER,  # Replace with your email
+        #     recipient_list=[email],
+        #     fail_silently=False,
+        #     html_message=html_message,
+        # )
 
-        # Send a notification to yourself (optional)
-        send_mail(
-            subject=f"New Contact Form Submission: {subject}",
-            message=f"New message from {name} ({email}):\n\n{message}",
-            from_email=settings.EMAIL_HOST_USER,  # Replace with your email
-            recipient_list=[settings.EMAIL_HOST_USER],  # Replace with your email
-            fail_silently=False,
-        )
+        # # Send a notification to yourself (optional)
+        # send_mail(
+        #     subject=f"New Contact Form Submission: {subject}",
+        #     message=f"New message from {name} ({email}):\n\n{message}",
+        #     from_email=settings.EMAIL_HOST_USER,  # Replace with your email
+        #     recipient_list=[settings.EMAIL_HOST_USER],  # Replace with your email
+        #     fail_silently=False,
+        # )
 
         # Show a success message
         messages.success(

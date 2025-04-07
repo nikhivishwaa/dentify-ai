@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 import io
 from .forms import ProfileEditForm
-
+from django.db.models import Q
 
 
 User = get_user_model()
@@ -29,22 +29,23 @@ def register(request):
         if dataval.is_valid():  
             d = dataval.data   
             print(d)       
-            user = User.objects.filter(email = d['email'], phone = d['phone'])
+            user = User.objects.filter(Q(email = d['email'].lower()) | Q(phone = d['phone']))
             if user.exists():
                 messages.error(request, "User already exist")
-                return redirect('signup')
+                return redirect('login')
 
             else:
                 user = User.objects.create_user(**dataval.data)
                 user.set_password(dataval.password)
                 user.save()
                 print('registered successfully', user)
-                otp_helper(user)
+                # otp_helper(user)
                 messages.success(request, "Account Created")
-                messages.success(request, "We have sent an OTP to your email for verification")
+                # messages.success(request, "We have sent an OTP to your email for verification")
         
                 # renering verify email page on signup route
-                return render(request, 'accounts/verifyemail.html', context={'email':user.email, "status":"sent"})
+                # return render(request, 'accounts/verifyemail.html', context={'email':user.email, "status":"sent"})
+                return redirect('login')
         else:
             print(dataval.errors, dataval.data)
             messages.error(request, dataval.errors)
@@ -199,7 +200,8 @@ def profileform(request):
 
 def userauth(request):
     if request.user.is_authenticated:
-        return redirect('send_otp')
+        # return redirect('send_otp')
+        return redirect('dashboard')
         
 
     elif request.method == 'POST':
@@ -210,7 +212,8 @@ def userauth(request):
             print('user', user, 'logged in')
             if user is not None:
                 login(request, user)
-                return redirect('send_otp')             
+                # return redirect('send_otp')             
+                return redirect('dashboard')
 
             else:
                 messages.error(request, "Invalid Credentials")

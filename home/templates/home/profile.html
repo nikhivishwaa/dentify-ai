@@ -1,211 +1,389 @@
 {% extends 'home/master.html' %}
+
 {% load static %}
 
-{% block title %}
-<title>Dentify AI - User Profile</title>
-{% endblock %}
-{% block styles %}
+{% block head %}
+
+<title>Profile - TonnaMatrix User Profile</title>
+<link rel="stylesheet" href="{% static 'home/css/profile.css' %}">
 <style>
-    .profile-header {
-        background: linear-gradient(135deg, #3498db, #8e44ad);
-        color: white;
-        padding: 2rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-    }
-    .stat-card {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-    }
-    .stat-card:hover {
-        transform: translateY(-5px);
-    }
-    .prediction-table {
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .prediction-table th {
-        background-color: #3498db;
-        color: white;
-    }
-    .prediction-table tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    .prediction-table tr:hover {
-        background-color: #e6f3ff;
+    .input-field {
+        min-width: 213px;
     }
 </style>
 {% endblock %}
 
+
 {% block body %}
-<!-- Container for Profile Section with Floating Animation -->
-<div class="float max-w-4xl mx-auto mt-10 bg-white p-8 shadow-lg rounded-lg smooth-transition">
-    <!-- User Information Section -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center">
-            <!-- Profile Picture -->
-            <img id="profile-picture" class="w-28 h-28 rounded-full shadow-lg transform hover:scale-105 transition duration-300"
-                src="https://via.placeholder.com/150" alt="Profile Picture">
-            <div class="ml-6">
-                <h2 id="user-name" class="text-3xl font-bold text-gray-800">{{ request.user.first_name}} {{ request.user.last_name }}</h2>
-                <p id="user-email" class="text-gray-600 mt-2">{{ request.user.email }}</p>
-                <p id="user-age" class="text-gray-600">Age: {{ request.user.user_age }}</p>
-                <p id="user-bio" class="mt-2 text-sm text-gray-500">Enthusiast in dental health, exploring AI-based
-                    teeth disease detection.</p>
+
+
+<div id="alert-area" class="relative m-0 w-[100%] min-[460px]:w-[32%] float-right"></div>
+<div class="container light-style container-p-y padding: py-[12px] px-[60px] max-[752px]:p-[22px] min-[980]:w-[80vw] max-[980]:w-[90%] max-[700]:w-[96%]" id="profile-section">
+    <h4 class="font-weight-bold py-3 mb-4">
+        PROFILE
+    </h4>
+    <div class="card overflow-hidden">
+        <div class="row no-gutters row-bordered row-border-light">
+            <div class="col-md-3 pt-0">
+                <div class="list-group list-group-flush account-settings-links">
+                    <a class="list-group-item list-group-item-action active" data-toggle="list"
+                        href="#account-general">Personal detail</a>
+                    <!-- <a class="list-group-item list-group-item-action" data-toggle="list"
+                        href="#account-change-password">Change password</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" href="#account-info">Info</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list"
+                        href="#account-social-links">Social links</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list"
+                        href="#account-connections">Connections</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list"
+                        href="#account-notifications">Notifications</a> -->
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content">
+                    <div class="tab-pane fade active show" id="account-general">
+                        <div class="card-body media flex align-items-center gap-4">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt class="d-block ui-w-80">
+                            <!-- <div class="media-body ml-4">
+                                <label class="btn btn-outline-primary">
+                                    Upload new photo
+                                    <input type="file" class="account-settings-fileinput">
+                                </label> &nbsp;
+                                <button type="button" class="btn btn-default md-btn-flat">Reset</button>
+                                <div class="text-light small mt-1">Allowed JPG, GIF or PNG. Max size of 800K</div>
+                            </div> -->
+                            {% if verified %}
+                            <span class="badge badge-success bg-success align-self-end">Verified</span>
+                            {% else %}
+                            <span class="badge badge-danger bg-danger align-self-end">UnVerified</span>
+                            {% endif %}
+
+                        </div>
+                        <hr class="border-light m-0">
+                        <div class="card-body">
+                            <div class="flex w-100 gap-4 my-4 max-[572px]:flex-col">
+                                <div class="form-group">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control mb-1" value="{{request.user.first_name|title}}"
+                                        name="first_name" id="first_name" readonly minlength="3">
+                                    <span class="block text-[12px] font-medium py-1 px-[10px] text-[red]"
+                                        id="first_name_error"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" value="{{request.user.last_name|title}}" name="last_name"
+                                        id="last_name" readonly>
+                                    <span class="block text-[12px] font-medium py-1 px-[10px] text-[red]"
+                                        id="last_name_error"></span>
+                                </div>
+                            </div>
+                            <div class="flex w-100 gap-4 my-4 max-[572px]:flex-col">
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" class="form-control" value="{{request.user.phone}}" name="phone"
+                                        id="phone" maxlength="10" minlength="10" readonly>
+                                    <span class="block text-[12px] font-medium py-1 px-[10px] text-[red]"
+                                        id="phone_error"></span>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="text" class="form-control mb-1" value="{{request.user.email}}" id="email" readonly>
+                                </div>
+                            </div>
+                            <!-- <div class="flex w-100 gap-4 my-4">
+                                <div class="form-group">
+                                    <label class="form-label min-w-[227px]">Date of Birth</label>
+                                    <input type="date" class="form-control mb-1" value="{{request.user.dob}}" name="dob" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="gender">Gender</label>
+                                    <style>
+                                        input[type="radio"] {
+                                            display: unset;
+                                        }
+                                    </style>
+                                    <div class="flex gap-4 input-field text-[15px] disabled p-2" id="gender">
+                                        <span class="flex items-baseline gap-1">
+                                            <input type="radio" id="male" value="male" name="gender" readonly>
+                                            <label for="male">Male</label>
+                                        </span>
+                                        <span class="flex items-baseline gap-1">
+                                            <input type="radio" name="gender" id="female" value="female"
+                                                placeholder="Female" readonly>
+                                            <label for="female">Female</label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group my-4">
+                                <label class="form-label">Bio</label>
+                                <textarea type="text" class="form-control" name="bio" value="{{request.user.bio}}"
+                                    readonly></textarea>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="account-change-password">
+                        <div class="card-body pb-2">
+                            <div class="form-group">
+                                <label class="form-label">Current password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">New password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Repeat new password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="account-notifications">
+                        <div class="card-body pb-2">
+                            <h6 class="mb-4">Activity</h6>
+                            <div class="form-group">
+                                <label class="switcher">
+                                    <input type="checkbox" class="switcher-input" checked>
+                                    <span class="switcher-indicator">
+                                        <span class="switcher-yes"></span>
+                                        <span class="switcher-no"></span>
+                                    </span>
+                                    <span class="switcher-label">Email me when someone comments on my article</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="switcher">
+                                    <input type="checkbox" class="switcher-input" checked>
+                                    <span class="switcher-indicator">
+                                        <span class="switcher-yes"></span>
+                                        <span class="switcher-no"></span>
+                                    </span>
+                                    <span class="switcher-label">Email me when someone answers on my forum
+                                        thread</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="switcher">
+                                    <input type="checkbox" class="switcher-input">
+                                    <span class="switcher-indicator">
+                                        <span class="switcher-yes"></span>
+                                        <span class="switcher-no"></span>
+                                    </span>
+                                    <span class="switcher-label">Email me when someone follows me</span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="border-light m-0">
+                        <div class="card-body pb-2">
+                            <h6 class="mb-4">Application</h6>
+                            <div class="form-group">
+                                <label class="switcher">
+                                    <input type="checkbox" class="switcher-input" checked>
+                                    <span class="switcher-indicator">
+                                        <span class="switcher-yes"></span>
+                                        <span class="switcher-no"></span>
+                                    </span>
+                                    <span class="switcher-label">News and announcements</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="switcher">
+                                    <input type="checkbox" class="switcher-input">
+                                    <span class="switcher-indicator">
+                                        <span class="switcher-yes"></span>
+                                        <span class="switcher-no"></span>
+                                    </span>
+                                    <span class="switcher-label">Weekly product updates</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="switcher">
+                                    <input type="checkbox" class="switcher-input" checked>
+                                    <span class="switcher-indicator">
+                                        <span class="switcher-yes"></span>
+                                        <span class="switcher-no"></span>
+                                    </span>
+                                    <span class="switcher-label">Weekly blog digest</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <button id="edit-profile-btn"
-            class="bg-blue-500 hover-animate hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md shadow-md">
-            Edit Profile
-        </button>
     </div>
-
-<!-- Edit Profile Form (Hidden by default) -->
-<!-- <form action="{% url 'profile' %}" method="POST" id="edit-profile-form" class="mt-6 hidden max-w-lg mx-auto bg-white p-8 shadow-md rounded-lg space-y-6" enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <div class="grid grid-cols-2 gap-6">
-        <div>
-            <label for="user_name" class="block text-sm font-medium text-gray-700">Name:</label>
-            <input type="text" id="user_name" name="user_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="John Doe" value="John Doe" required>
-        </div>
-
-        <div>
-            <label for="user_email" class="block text-sm font-medium text-gray-700">Email:</label>
-            <input type="email" id="user_email" name="user_email" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="johndoe@example.com" value="johndoe@example.com" required>
-        </div>
+    <div class="text-right mt-3" id="edit">
+        <button type="button" class="btn btn-primary" onclick="enableEditing()">Edit</button>
     </div>
-
-    <div class="grid grid-cols-2 gap-6">
-        <div>
-            <label for="user_age" class="block text-sm font-medium text-gray-700">Age:</label>
-            <input type="number" id="user_age" name="user_age" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="35" value="35" required>
-        </div>
-
-        <div>
-            <label for="user_bio" class="block text-sm font-medium text-gray-700">Bio:</label>
-            <textarea id="user_bio" name="user_bio" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enthusiast in dental health, exploring AI-based teeth disease detection." required>Enthusiast in dental health, exploring AI-based teeth disease detection.</textarea>
-        </div>
-    </div>
-
-    <div>
-        <label for="user_image" class="block text-sm font-medium text-gray-700">Upload New Profile Picture:</label>
-        <input type="file" name="user_image" id="user_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100" required>
-    </div>
-
-    <div class="flex justify-end space-x-4">
-        <button type="button" onclick="cancelEdit()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
-        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save Changes</button>
-    </div>
-</form> -->
-
-
-<!-- Edit Profile Form (Hidden by default) -->
-<form action="{% url 'profile' %}" method="POST" id="edit-profile-form" class="mt-6 hidden max-w-lg mx-auto bg-white p-8 shadow-md rounded-lg space-y-6" enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <div class="grid grid-cols-2 gap-6">
-        <div>
-            <label for="first_name" class="block text-sm font-medium text-gray-700">First Name:</label>
-            <input type="text" id="first_name" name="first_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="John" value="{{ request.user.first_name }}" required>
-        </div>
-
-        <div>
-            <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name:</label>
-            <input type="text" id="last_name" name="last_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Doe" value="{{ request.user.last_name }}" required>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-6">
-        <div>
-            <label for="phone" class="block text-sm font-medium text-gray-700">Phone:</label>
-            <input type="text" id="phone" name="phone" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="1234567890" value="{{ request.user.phone }}" required>
-        </div>
-
-        <div>
-            <label for="gender" class="block text-sm font-medium text-gray-700">Gender:</label>
-            <select id="gender" name="gender" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                <option value="" disabled {% if not request.user.gender %}selected{% endif %}>Select Gender</option>
-                <option value="m" {% if request.user.gender == 'm' %}selected{% endif %}>Male</option>
-                <option value="f" {% if request.user.gender == 'f' %}selected{% endif %}>Female</option>
-                <option value="x" {% if request.user.gender == 'x' %}selected{% endif %}>Other</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-6">
-        <div>
-            <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth:</label>
-            <input type="date" id="dob" name="dob" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" value="{{ request.user.dob|date:'Y-m-d' }}" required>
-        </div>
-
-        <div>
-            <label for="bio" class="block text-sm font-medium text-gray-700">Bio:</label>
-            <textarea id="bio" name="bio" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enthusiast in dental health, exploring AI-based teeth disease detection." required>{{ request.user.bio }}</textarea>
-        </div>
-    </div>
-
-    <div>
-        <label for="profile_pic" class="block text-sm font-medium text-gray-700">Upload New Profile Picture:</label>
-        <input type="file" name="profile_pic" id="profile_pic" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
-    </div>
-
-    <div class="flex justify-end space-x-4">
-        <button type="button" onclick="cancelEdit()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Cancel</button>
-        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save Changes</button>
-    </div>
-</form>
-
-    
-
-    <!-- Teeth Image Uploads History -->
-    <div class="mt-10">
-        <h3 class="text-2xl font-bold text-gray-800">Teeth Image Uploads History</h3>
-        <table class="w-full mt-6 table-auto border-collapse">
-            <thead>
-                <tr class="bg-blue-100">
-                    <th class="border px-6 py-4 text-left text-gray-600">Image</th>
-                    <th class="border px-6 py-4 text-left text-gray-600">Upload Date</th>
-                    <th class="border px-6 py-4 text-left text-gray-600">Disease</th>
-                    <th class="border px-6 py-4 text-left text-gray-600">Confidence (%)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="hover:bg-gray-100 transition duration-200">
-                    <td class="border px-6 py-4">
-                        <img class="w-12 h-12 rounded shadow-md transform hover:scale-110 transition duration-300"
-                            src="https://via.placeholder.com/50" alt="Teeth Image">
-                    </td>
-                    <td class="border px-6 py-4">2024-10-09</td>
-                    <td class="border px-6 py-4">Gingivitis</td>
-                    <td class="border px-6 py-4">87%</td>
-                </tr>
-                <tr class="hover:bg-gray-100 transition duration-200">
-                    <td class="border px-6 py-4">
-                        <img class="w-12 h-12 rounded shadow-md transform hover:scale-110 transition duration-300"
-                            src="https://via.placeholder.com/50" alt="Teeth Image">
-                    </td>
-                    <td class="border px-6 py-4">2024-10-08</td>
-                    <td class="border px-6 py-4">Cavities</td>
-                    <td class="border px-6 py-4">92%</td>
-                </tr>
-                <tr class="hover:bg-gray-100 transition duration-200">
-                    <td class="border px-6 py-4">
-                        <img class="w-12 h-12 rounded shadow-md transform hover:scale-110 transition duration-300"
-                            src="https://via.placeholder.com/50" alt="Teeth Image">
-                    </td>
-                    <td class="border px-6 py-4">2024-10-07</td>
-                    <td class="border px-6 py-4">Plaque</td>
-                    <td class="border px-6 py-4">78%</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="text-right mt-3" id="cancel">
+        <button type="button" class="btn btn-primary" onclick="saveChanges()">Save changes</button>&nbsp;
+        <button type="button" class="btn btn-default" onclick="disableEditing()">Cancel</button>
     </div>
 </div>
+
+<script>
+    const fname = document.getElementById('first_name')
+    const lname = document.getElementById('last_name')
+    const phone = document.getElementById('phone')
+    const cancel = document.getElementById('cancel')
+    const edit = document.getElementById('edit')
+    cancel.style.display = 'none';
+
+
+
+    function enableEditing() {
+        fname.readOnly = false;
+        lname.readOnly = false;
+        phone.readOnly = false;
+        edit.style.display = 'none';
+        cancel.style.display = 'block';
+    }
+    function saveChanges() {
+        if (checkProfileForm()) {
+            const changes = {
+                first_name: fname.value,
+                last_name: lname.value,
+                phone: phone.value
+            }
+            console.log(changes)
+            updateProfile(changes);
+            disableEditing(1)
+        }
+    }
+    function disableEditing(d = 0) {
+        fname.readOnly = true;
+        lname.readOnly = true;
+        phone.readOnly = true;
+        edit.style.display = 'block';
+        cancel.style.display = 'none';
+        if (!d) getProfile()
+    }
+
+    async function getProfile() {
+        const profile = await (await fetch('/user/api/profile/')).json();
+        if (profile.success) {
+            const { verified, ...data } = profile.data;
+            console.log(data)
+            for (const key in data) {
+                document.getElementById(key).value = data[key];
+            }
+        }
+        else {
+            showAlert('error', 'Failed to load profile.');
+        }
+    }
+    async function updateProfile(data) {
+        try {
+            const profile = await (await fetch('/user/api/profile/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })).json();
+            console.log(profile)
+            if (profile.success) {
+                const { verified, ...data } = profile.data;
+                console.log(data)
+                for (const key in data) {
+                    const inpt_field = document.getElementById(key)
+                    inpt_field.value = data[key];
+                    inpt_field.style.borderColor = '#ced4da';
+
+                }
+                showAlert('success', profile.message);
+            }
+            else {
+                for (const e of profile.message) {
+                    showAlert('error', e);
+                }
+            }
+        }
+        catch (err) {
+            showAlert('error', 'Failed to update profile.');
+        }
+    }
+
+    function checkProfileForm() {
+        let fname_error = document.getElementById('first_name_error');
+        let lname_error = document.getElementById('last_name_error');
+        let phone_error = document.getElementById('phone_error');
+        let flags = [false, true, false]
+
+        // check first name
+        if (fname.value.length < 3) {
+            fname.style.borderColor = 'Red';
+            flags[0] = false;
+            fname_error.innerHTML = "First Name must have 3 or more characters";
+        }
+        else if (fname.value.trim().search(/^[a-zA-Z]{3,}$/)) {
+            fname.style.borderColor = 'Red';
+            flags[0] = false;
+            fname_error.innerHTML = "First Name must have alphabets only";
+        }
+
+        else {
+            fname.style.borderColor = 'green';
+            fname_error.innerHTML = "";
+            flags[0] = true;
+        }
+
+        // check last name if given
+        if (lname.value.length) {
+            let last_name = lname.value.trim()
+            if (last_name.search(/^[a-z\sA-Z]{2,}$/) !== 0 || last_name.search(/\s{2,}/) !== -1) {
+                lname.style.borderColor = 'Red';
+                flags[1] = false;
+                lname_error.innerHTML = "Remove extra spaces or number from Last Name";
+            }
+
+            else {
+                lname.style.borderColor = 'green';
+                lname_error.innerHTML = "";
+                flags[1] = true;
+            }
+        }
+        else {
+            lname.style.borderColor = 'grey';
+            lname_error.innerHTML = "";
+            flags[1] = true;
+        }
+
+        // check phone
+        if (!phone.value.length) {
+            phone.style.borderColor = 'Red';
+            flags[2] = false;
+            phone_error.innerHTML = "Please enter phone number";
+        }
+        else if (phone.value.search(/^\d{10}$/) === -1) {
+            phone.style.borderColor = 'Red';
+            flags[2] = false;
+            phone_error.innerHTML = "Please enter a valid phone number";
+        }
+        else {
+            phone.style.borderColor = 'green';
+            phone_error.innerHTML = "";
+            flags[2] = true;
+        }
+        return flags[0] && flags[1] && flags[2];
+    }
+
+    async function showAlert(type, message) {
+        const alert = `<div class="alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show w-100 py-[10px] px-[25px] absolute" role="alert">
+<strong>${type[0].toUpperCase()}${type.slice(1)} : </strong >${message}
+<button type="button" class="close float-right" data-dismiss="alert" aria-label="Close" onclick="this.parentNode.remove(true)">
+  <span aria-hidden="true" class="text-[30px]">&times;</span>
+</button>
+</div >`
+        const alerts = document.getElementById('alert-area')
+        alerts.innerHTML += alert;
+        const dismiss_alert = alerts.lastChild
+        setTimeout(() => dismiss_alert.remove(true), 5000);
+    }
+
+</script>
+
 {% endblock %}
 
 {% block script %}
